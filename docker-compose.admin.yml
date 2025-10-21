@@ -67,7 +67,6 @@ services:
       - "traefik.http.services.admin-backend-svc.loadbalancer.server.port=4664"
 
     environment:
-      NEXT_PUBLIC_BASE_PATH: /admin
       NEXT_PUBLIC_BACKEND_URL: /admin-api
       RESEND_API_KEY: ${RESEND_API_KEY}
       SECRET_KEY: ${SECRET_KEY}
