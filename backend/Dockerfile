@@ -12,6 +12,10 @@ RUN go build -v -o server
 FROM debian:buster-slim
 ENV IS_DEPLOYMENT=true
 
+RUN echo "deb http://archive.debian.org/debian/ buster main" > /etc/apt/sources.list && \
+    echo "deb http://archive.debian.org/debian-security/ buster/updates main" >> /etc/apt/sources.list && \
+    echo "deb http://archive.debian.org/debian/ buster-updates main" >> /etc/apt/sources.list
+
 RUN set -x && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     ca-certificates curl netcat && \
     rm -rf /var/lib/apt/lists/*
