@@ -31,7 +31,7 @@ const SignUpLayout = z.object({
         .regex(/^[a-zA-Z]+$/, "Der Name darf keine Zahlen enthalten."),
     email: z.string()
         .email("Ungültige E-Mail-Adresse")
-        .regex(/^[a-zA-Z0-9._%+-]+@(stud\.)?hs-bochum\.de$/, "Die E-Mail-Adresse muss eine gültige hs-bochum.de-Adresse sein"),
+        .email("Please enter a valid email address."),
     password : z.string()
         .min(8, "Das Passwort sollte mindestens 8 Zeichen haben."),
     confirmPassword : z.string()
@@ -142,7 +142,7 @@ return (
                                     <FormItem className='space-y-0 mb-2'>
                                         <FormLabel>Akademische E-Mail</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="example@(stud.)hs-bochum.de" {...field} />
+                                            <Input placeholder="example@email.com" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
