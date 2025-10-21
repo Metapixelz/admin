@@ -46,8 +46,6 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=digi-work_default"
 
-      # --- Middlewares ---
-      - "traefik.http.middlewares.admin-stripprefix.stripprefix.prefixes=/admin"
       - "traefik.http.middlewares.admin-api-stripprefix.stripprefix.prefixes=/admin-api"
 
       # --- Frontend Router ---
@@ -55,7 +53,6 @@ services:
       - "traefik.http.routers.admin-frontend.entrypoints=websecure"
       - "traefik.http.routers.admin-frontend.tls.certresolver=myresolver"
       - "traefik.http.routers.admin-frontend.service=admin-frontend-svc"
-      - "traefik.http.routers.admin-frontend.middlewares=admin-stripprefix@docker"
       - "traefik.http.services.admin-frontend-svc.loadbalancer.server.port=3000"
 
       # --- Backend Router ---
