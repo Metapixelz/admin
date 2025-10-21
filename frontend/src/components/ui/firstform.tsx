@@ -16,7 +16,7 @@ import Link from 'next/link'
 import NextCrypto from 'next-crypto';
 import { sendEmail } from './verification'
 import { env, send } from 'process'
-import {BACKEND_URL} from '@/loadEnv';
+
 
 
 require('dotenv').config({ path: '../../.env' });
@@ -53,7 +53,7 @@ const FirstForm = () => {
    
     async function onSubmit(data: z.infer<typeof SignUpLayout>) {
         try {
-            const response = await fetch(BACKEND_URL + "/auth/register", {
+            const response = await fetch("/admin-api/auth/register", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -74,7 +74,7 @@ const FirstForm = () => {
 
                 alert("verification email skipped for now");
 
-                const loginResponse = await fetch(BACKEND_URL + "/auth/login", {
+                const loginResponse = await fetch("/admin-api/auth/login", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
