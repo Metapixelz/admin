@@ -1,0 +1,80 @@
+version: '3.7'
+
+networks:
+  wa_network:
+    external:
+      name: digi-work_default
+  admin_internal:
+
+services:
+  db:
+    image: mariadb:10.5
+    restart: unless-stopped
+    networks:
+      - admin_internal
+    volumes: 
+      - ./data/db:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      DB_TYPE: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ${DB_DATABASE}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      ADMIN_API_TOKEN: ${ADMIN_API_TOKEN}
+    env_file:
+      - .env
+    networks:
+      - admin_internal
+      - wa_network
+    expose:
+      - "4664"
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=digi-work_default"
+
+      # --- Middlewares ---
+      - "traefik.http.middlewares.admin-stripprefix.stripprefix.prefixes=/admin"
+      - "traefik.http.middlewares.admin-api-stripprefix.stripprefix.prefixes=/admin-api"
+
+      # --- Frontend Router ---
+      - "traefik.http.routers.admin-frontend.rule=Host(`play.digi-work.ir`) && PathPrefix(`/admin`)"
+      - "traefik.http.routers.admin-frontend.entrypoints=websecure"
+      - "traefik.http.routers.admin-frontend.tls.certresolver=myresolver"
+      - "traefik.http.routers.admin-frontend.service=admin-frontend-svc"
+      - "traefik.http.routers.admin-frontend.middlewares=admin-stripprefix@docker"
+      - "traefik.http.services.admin-frontend-svc.loadbalancer.server.port=3000"
+
+      # --- Backend Router ---
+      - "traefik.http.routers.admin-backend.rule=Host(`play.digi-work.ir`) && PathPrefix(`/admin-api`)"
+      - "traefik.http.routers.admin-backend.entrypoints=websecure"
+      - "traefik.http.routers.admin-backend.tls.certresolver=myresolver"
+      - "traefik.http.routers.admin-backend.service=admin-backend-svc"
+      - "traefik.http.routers.admin-backend.middlewares=admin-api-stripprefix@docker"
+      - "traefik.http.services.admin-backend-svc.loadbalancer.server.port=4664"
+
+    environment:
+      NEXT_PUBLIC_BASE_PATH: /admin
+      NEXT_PUBLIC_BACKEND_URL: /admin-api
+      RESEND_API_KEY: ${RESEND_API_KEY}
+      SECRET_KEY: ${SECRET_KEY}
+      NODE_ENV: production
+    env_file:
+      - .env
+    networks:
+      - wa_network
+    expose:
+      - "3000"

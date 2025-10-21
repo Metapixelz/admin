@@ -4,5 +4,5 @@ export const SMTP_PASSWORD="fdjb fxas snbk emhp"
 export const SMTP_EMAIL="rabie.mhd.99@gmail.com"
 
 // this is the url of the backend server
-export const BACKEND_URL="http://localhost:4664"  
+export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:4664"  
 
